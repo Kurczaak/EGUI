@@ -1,0 +1,55 @@
+﻿@{
+        ViewData["Title"] = "Day";
+        DateTime thisDate = new DateTime((int)ViewData["Year"], (int)ViewData["Month"], (int)ViewData["Day"]);
+
+        DateTime tommorow = thisDate.AddDays(1);
+        DateTime yesterday = thisDate.AddDays(-1);
+        Event thisEvent = (Event)ViewData["Event"];
+}
+
+
+
+
+<div class="month">
+    <ul>
+        <li class="prev">
+            <a class="btn" asp-controller="Calendar" asp-action="Event" asp-route-year="@yesterday.Year" asp-route-month="@yesterday.Month" asp-route-day="@yesterday.Day">
+                &#10094;
+            </a>
+        </li>
+        <li class="next">
+            <a class="btn" asp-controller="Calendar" asp-action="Event" asp-route-year="@tommorow.Year" asp-route-month="@tommorow.Month" asp-route-day="@tommorow.Day">
+                &#10095;
+            </a>
+        </li>
+        <li>@ViewData["Day"] @thisDate.ToString("MMMM")<br><span style="font-size:18px">@ViewData["Year"]</span></li>
+    </ul>
+</div>
+
+<ul class="weekdays">
+    <li>Time</li>
+    <li style="width:70%">Description</li>
+    <li></li>
+</ul>
+
+<form action="saveEvent" method="post">
+
+    <ul class="days" style=" width: 100%; margin:auto; display:flex">
+        <input type="time" name="time1" style="margin-left:10px" value="12:30">
+        <div style="margin:5px; height: 90px; text-align:center; line-height: 90px;">- </div>
+         <input type="time" name="time2" value="12:30">
+       <textarea name="description">@thisEvent.eventDescription</textarea>
+    </ul>
+
+    <ul class="days">
+        <li style="width: 100%; margin:auto; display:flex">
+            <input type="submit" value="save" class="btn btn-outline-info" asp-action="saveEvent" asp-route-year="@thisDate.Year"
+               asp-route-month="@thisDate.Month" asp-route-day="@thisDate.Day" >
+            <a class="btn btn-outline-info"
+               asp-controller="Calendar" asp-action="Day" asp-route-year="@thisDate.Year"
+               asp-route-month="@thisDate.Month" asp-route-day="@thisDate.Day">
+                cancel
+            </a>
+        </li>
+    </ul>
+</form>

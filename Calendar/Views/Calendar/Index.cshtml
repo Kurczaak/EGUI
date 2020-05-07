@@ -1,0 +1,153 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+    DateTime setPrevMonthDate(DateTime currentDate)
+    {
+        int currentMonth = currentDate.Month;
+        int currentYear = currentDate.Year;
+        int prevMonth = currentMonth - 1;
+        int prevYear = currentYear;
+        if (prevMonth < 1)
+        {
+            prevMonth = 12;
+            prevYear--;
+        }
+        return new DateTime(prevYear, prevMonth, 1);
+    }
+
+    DateTime setNextMonthDate(DateTime currentDate)
+    {
+        int currentMonth = currentDate.Month;
+        int currentYear = currentDate.Year;
+        int nextMonth = currentMonth + 1;
+        int nextYear = currentYear;
+        if (nextMonth > 12)
+        {
+            nextMonth = 1;
+            nextYear++;
+        }
+        return new DateTime(nextYear, nextMonth, 1);
+    }
+
+    string assignStyle(List<Event> _events, DateTime date)
+    {
+        string activeStyle = "background: #38f5eb";
+        string eventStyle = "background: #81b5ab";
+        string activeEventStyle = "background: #8fe3a5";
+        string style = "";
+
+
+        if (_events != null)
+        {
+            foreach (Event element in _events)
+            {
+                if (element.eventDate == date)
+                {
+                    style = eventStyle;
+                }
+            }
+            if (style == eventStyle && date == DateTime.Today)
+                style = activeEventStyle;
+            else if (style == "" && date == DateTime.Today)
+                style = activeStyle;
+        }
+        else if (style == "" && date == DateTime.Today)
+                style = activeStyle;
+        return style;
+    }
+
+    List<Event> events = (List<Event>)ViewData["Events"];
+    DateTime currentDate = (DateTime)ViewData["Date"];
+    DateTime nextMonthDate = setNextMonthDate(currentDate);
+    DateTime prevMonthDate = setPrevMonthDate(currentDate);
+    int firstDay = (int)currentDate.DayOfWeek;
+    int prevMonthNumDays = DateTime.DaysInMonth(prevMonthDate.Year, prevMonthDate.Month);
+    int currMonthNumDays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+    int prevMonthStart = prevMonthNumDays - firstDay + 2;
+}
+
+
+    <div class="month">
+        <ul>
+            <li class="prev">
+                <a class="btn" asp-controller="Calendar" asp-action="Index" asp-route-year="@prevMonthDate.Year" asp-route-month="@prevMonthDate.Month">
+                    &#10094;
+                </a>
+            </li>
+            <li class="next">
+                <a class="btn" asp-controller="Calendar" asp-action="Index" asp-route-year="@nextMonthDate.Year" asp-route-month="@nextMonthDate.Month">
+                    &#10095;
+                </a>
+            </li>
+            <li>@currentDate.ToString("MMMM")<br><span style="font-size:18px">@currentDate.Year</span></li>
+        </ul>
+    </div>
+
+    <ul class="weekdays">
+        <li>Mo</li>
+        <li>Tu</li>
+        <li>We</li>
+        <li>Th</li>
+        <li>Fr</li>
+        <li>Sa</li>
+        <li>Su</li>
+    </ul>
+
+    <ul class="days">
+        @{
+            for (int i = 0; i < 6; ++i)
+            {
+                for (int j = 0; j < 7; ++j)
+                {
+                    int day = i * 7 + j - firstDay + 2;
+
+                    if (prevMonthStart <= prevMonthNumDays)
+                    {
+                        <li>
+                            <a class="btn btn-outline-secondary"
+                               asp-controller="Calendar" asp-action="Index" asp-route-year="@prevMonthDate.Year" asp-route-month="@prevMonthDate.Month">
+                                @prevMonthStart
+                            </a>
+                        </li>
+                        ++prevMonthStart;
+                    }
+
+                    else if (prevMonthStart > prevMonthNumDays && day <= currMonthNumDays)
+                    {
+                        DateTime tempDate = new DateTime(currentDate.Year, currentDate.Month, day);
+                        string style = assignStyle(events, tempDate);
+                        if ((i * 7 + j + 1) % 7 == 0 || (i * 7 + j + 2) % 7 == 0)
+                        {
+                            <li>
+                                <a class="btn btn-outline-danger" style="@style"
+                                   asp-controller="Calendar" asp-action="Day" asp-route-year="@currentDate.Year"
+                                   asp-route-month="@currentDate.Month" asp-route-day="@day">
+                                    @day
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a class="btn btn-outline-primary" style="@style"
+                                   asp-controller="Calendar" asp-action="Day" asp-route-year="@currentDate.Year"
+                                   asp-route-month="@currentDate.Month" asp-route-day="@day">
+                                    @day
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        day = day - currMonthNumDays;
+                        <li>
+                            <a class="btn btn-outline-secondary"
+                               asp-controller="Calendar" asp-action="Index" asp-route-year="@nextMonthDate.Year" asp-route-month="@nextMonthDate.Month">
+                                @day
+                            </a>
+                        </li>
+                    }
+                }
+            }
+        }
+    </ul>

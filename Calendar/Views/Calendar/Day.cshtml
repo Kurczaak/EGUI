@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Day";
+    DateTime thisDate = new DateTime((int)ViewData["Year"], (int)ViewData["Month"], (int)ViewData["Day"]);
+
+    DateTime tommorow = thisDate.AddDays(1);
+    DateTime yesterday = thisDate.AddDays(-1);
+    List<Event> events = (List<Event>)ViewData["Events"];
+}
+
+
+
+
+<div class="month">
+    <ul>
+        <li class="prev">
+            <a class="btn" asp-controller="Calendar" asp-action="Day" asp-route-year="@yesterday.Year" asp-route-month="@yesterday.Month" asp-route-day="@yesterday.Day">
+                &#10094;
+            </a>
+        </li>
+        <li class="next">
+            <a class="btn" asp-controller="Calendar" asp-action="Day" asp-route-year="@tommorow.Year" asp-route-month="@tommorow.Month" asp-route-day="@tommorow.Day">
+                &#10095;
+            </a>
+        </li>
+        <li>@ViewData["Day"] @thisDate.ToString("MMMM")<br><span style="font-size:18px">@ViewData["Year"]</span></li>
+    </ul>
+</div>
+
+<ul class="weekdays">
+    <li>Time</li>
+    <li style="width:70%">Description</li>
+    <li></li>
+</ul>
+
+@{
+    if (events != null)
+    {
+        foreach (Event element in events)
+        {
+            if (element.eventDate == thisDate)
+            {
+
+                <ul class="days" style=" border-bottom: 1px solid black">
+                    <li>@element.eventTime1 - @element.eventTime2 </li>
+                    <li style="width:70%">@element.eventDescription</li>
+                    <li>
+                        <a type="button" class="btn btn-outline-dark"
+                           asp-controller="Calendar" asp-action="EditEvent"
+                           asp-route-year="@element.eventDate.Year" asp-route-month="@element.eventDate.Month" 
+                           asp-route-day="@element.eventDate.Day" asp-route-description="@element.eventDescription" 
+                           asp-route-time1="@element.eventTime1" asp-route-time2="@element.eventTime2">
+                            edit
+                        </a>
+
+                        <a class="btn btn-outline-dark"
+                           asp-controller="Calendar" asp-action="DeleteEvent"
+                           asp-route-year="@element.eventDate.Year" asp-route-month="@element.eventDate.Month" 
+                           asp-route-day="@element.eventDate.Day" asp-route-description="@element.eventDescription" 
+                           asp-route-time1="@element.eventTime1" asp-route-time2="@element.eventTime2">
+                        delete
+                        </a>
+                    </li>
+                </ul>
+            }
+        }
+
+    }
+}
+
+
+<ul class="days">
+    <li style="width: 100%; margin:auto; display:flex">
+        <a class="btn btn-outline-info" asp-controller="Calendar" asp-action="Event" asp-route-year="@thisDate.Year"
+           asp-route-month="@thisDate.Month" asp-route-day="@thisDate.Day">
+            add new
+        </a>
+        <a class="btn btn-outline-info" asp-controller="Calendar" asp-action="Index" asp-route-year="@thisDate.Year"
+           asp-route-month="@thisDate.Month">
+            close
+        </a>
+    </li>
+</ul>

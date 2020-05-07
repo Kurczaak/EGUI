@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Day";
+    DateTime thisDate = new DateTime((int)ViewData["Year"], (int)ViewData["Month"], (int)ViewData["Day"]);
+
+    DateTime tommorow = thisDate.AddDays(1);
+    DateTime yesterday = thisDate.AddDays(-1);
+    Event thisEvent = (Event)ViewData["Event"];
+}
+
+
+
+
+<div class="month">
+    <ul>
+        <li>@ViewData["Day"] @thisDate.ToString("MMMM")<br><span style="font-size:18px">@ViewData["Year"]</span></li>
+    </ul>
+</div>
+
+<ul class="weekdays">
+    <li>Time</li>
+    <li style="width:70%">Description</li>
+    <li></li>
+</ul>
+
+<form action="saveEvent" method="post">
+
+    <ul class="days" style=" width: 100%; margin:auto; display:flex">
+        <input type="time" name="time1" style="margin-left:10px" value="@thisEvent.eventTime1">
+        <div style="margin:5px; height: 90px; text-align:center; line-height: 90px;">- </div>
+        <input type="time" name="time2" value="@thisEvent.eventTime2">
+        <textarea name="description">@thisEvent.eventDescription</textarea>
+    </ul>
+
+    <ul class="days">
+        <li style="width: 100%; margin:auto; display:flex">
+            <input type="submit" value="save" class="btn btn-outline-info" asp-action="DeleteEditEvent" 
+                   asp-route-year="@thisEvent.eventDate.Year" asp-route-month="@thisEvent.eventDate.Month" 
+                           asp-route-day="@thisEvent.eventDate.Day" asp-route-oldDescription="@thisEvent.eventDescription" 
+                           asp-route-oldTime1="@thisEvent.eventTime1" asp-route-oldTime2="@thisEvent.eventTime2" />
+            <a class="btn btn-outline-info"
+               asp-controller="Calendar" asp-action="Day" asp-route-year="@thisDate.Year"
+               asp-route-month="@thisDate.Month" asp-route-day="@thisDate.Day">
+                cancel
+            </a>
+        </li>
+    </ul>
+</form>
